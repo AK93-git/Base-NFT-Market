@@ -26,7 +26,7 @@ base-nft-marketplace/
 
 🚀 Installation and Setup
 1. Clone the repository
-git clone https://github.com/yourusername/base-nft-marketplace.git
+git clone https://github.com/AK93-git/base-nft-market.git
 cd base-nft-marketplace
 2. Install dependencies
 npm install
