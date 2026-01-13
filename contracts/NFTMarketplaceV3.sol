@@ -158,7 +158,7 @@ contract NFTMarketplaceV2 is ERC721, Ownable, ReentrancyGuard {
         // Transfer NFT to bidder
         transferFrom(address(this), bid.bidder, tokenId);
         
-        // Mark bid as inactive
+       
         bid.active = false;
         
         emit BidAccepted(tokenId, bid.bidder, bid.amount);
