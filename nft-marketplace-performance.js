@@ -20,7 +20,7 @@ async function analyzeNFTMarketplacePerformance() {
   };
   
   try {
-    // Метрики производительности
+
     const performanceMetrics = await marketplace.getPerformanceMetrics();
     performanceReport.performanceMetrics = {
       responseTime: performanceMetrics.responseTime.toString(),
@@ -31,7 +31,7 @@ async function analyzeNFTMarketplacePerformance() {
       gasEfficiency: performanceMetrics.gasEfficiency.toString()
     };
     
-    // Оценки эффективности
+
     const efficiencyScores = await marketplace.getEfficiencyScores();
     performanceReport.efficiencyScores = {
       marketplaceEfficiency: efficiencyScores.marketplaceEfficiency.toString(),
@@ -41,7 +41,7 @@ async function analyzeNFTMarketplacePerformance() {
       revenueEfficiency: efficiencyScores.revenueEfficiency.toString()
     };
     
-    // Пользовательский опыт
+
     const userExperience = await marketplace.getUserExperience();
     performanceReport.userExperience = {
       interfaceUsability: userExperience.interfaceUsability.toString(),
@@ -51,7 +51,7 @@ async function analyzeNFTMarketplacePerformance() {
       customerSatisfaction: userExperience.customerSatisfaction.toString()
     };
     
-    // Масштабируемость
+
     const scalability = await marketplace.getScalability();
     performanceReport.scalability = {
       userCapacity: scalability.userCapacity.toString(),
@@ -61,7 +61,7 @@ async function analyzeNFTMarketplacePerformance() {
       futureGrowth: scalability.futureGrowth.toString()
     };
     
-    // Анализ производительности
+
     if (parseFloat(performanceReport.performanceMetrics.responseTime) > 2000) {
       performanceReport.recommendations.push("Optimize response time for better user experience");
     }
@@ -78,7 +78,7 @@ async function analyzeNFTMarketplacePerformance() {
       performanceReport.recommendations.push("Enhance user experience and satisfaction");
     }
     
-    // Сохранение отчета
+
     const performanceFileName = `nft-performance-${Date.now()}.json`;
     fs.writeFileSync(`./performance/${performanceFileName}`, JSON.stringify(performanceReport, null, 2));
     console.log(`Performance report created: ${performanceFileName}`);
