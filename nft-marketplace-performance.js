@@ -8,7 +8,7 @@ async function analyzeNFTMarketplacePerformance() {
   const marketplaceAddress = "0x...";
   const marketplace = await ethers.getContractAt("NFTMarketplaceV3", marketplaceAddress);
   
-  // Анализ производительности
+
   const performanceReport = {
     timestamp: new Date().toISOString(),
     marketplaceAddress: marketplaceAddress,
