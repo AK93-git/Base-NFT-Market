@@ -34,18 +34,18 @@ contract NFTMarketplaceV2 is ERC721, Ownable, ReentrancyGuard {
     mapping(uint256 => Sale) public sales;
     mapping(address => uint256[]) public sellerSales;
     
-    // Конфигурация
+
     uint256 public platformFeePercentage;
     uint256 public minimumListingPrice;
     uint256 public maximumRoyaltyPercentage;
     uint256 public nextSaleId;
     uint256 public nextListingId;
     
-    // Статистика
+   
     uint256 public totalVolume;
     uint256 public totalTrades;
     
-    // События
+   
     event NFTListed(
         uint256 indexed listingId, 
         uint256 indexed tokenId, 
@@ -88,12 +88,12 @@ contract NFTMarketplaceV2 is ERC721, Ownable, ReentrancyGuard {
         emit FeeUpdated(newFee);
     }
     
-    // Функция для установки минимальной цены листинга
+
     function setMinimumListingPrice(uint256 newPrice) external onlyOwner {
         minimumListingPrice = newPrice;
     }
     
-    // Функция для установки максимальной роялти
+
     function setMaximumRoyaltyPercentage(uint256 newPercentage) external onlyOwner {
         require(newPercentage <= 10000, "Royalty too high"); // Maximum 100%
         maximumRoyaltyPercentage = newPercentage;
