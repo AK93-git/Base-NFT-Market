@@ -81,7 +81,7 @@ contract NFTMarketplaceV2 is ERC721, Ownable, ReentrancyGuard {
         maximumRoyaltyPercentage = _maximumRoyaltyPercentage;
     }
     
-    // Функция для установки комиссии платформы
+
     function setPlatformFee(uint256 newFee) external onlyOwner {
         require(newFee <= 10000, "Fee too high"); // Maximum 100%
         platformFeePercentage = newFee;
