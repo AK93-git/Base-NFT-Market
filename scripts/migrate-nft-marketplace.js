@@ -10,7 +10,7 @@ async function main() {
 
   const currentContractAddress = "0x...";
   
-  // Деплой нового контракта
+
   const NFTMarketplaceV4 = await ethers.getContractFactory("NFTMarketplaceV4");
   const newMarketplace = await NFTMarketplaceV4.deploy(
     300, // 3% platform fee
