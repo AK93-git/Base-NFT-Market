@@ -7,7 +7,7 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   console.log("Migrating with the account:", deployer.address);
 
-  // Получаем адрес текущего контракта
+
   const currentContractAddress = "0x...";
   
   // Деплой нового контракта
