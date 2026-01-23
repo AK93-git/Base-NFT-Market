@@ -1,4 +1,4 @@
-// base-nft-marketplace/scripts/migrate.js
+
 const { ethers } = require("hardhat");
 
 async function main() {
