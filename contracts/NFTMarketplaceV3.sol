@@ -199,4 +199,30 @@ contract NFTMarketplaceV2 is ERC721, Ownable, ReentrancyGuard {
         
         return result;
     }
+// Добавить в структуру:
+struct Collection {
+    string name;
+    string description;
+    address creator;
+    uint256 royaltyPercentage;
+    uint256 totalNFTs;
+    bool active;
+}
+
+// Добавить функции:
+function createCollection(
+    string memory name,
+    string memory description,
+    uint256 royaltyPercentage
+) external {
+    // Реализация создания коллекции
+}
+
+function addNFTToCollection(
+    uint256 tokenId,
+    address collectionId,
+    uint256 royaltyPercentage
+) external {
+    // Реализация добавления NFT в коллекцию
+}
 }
