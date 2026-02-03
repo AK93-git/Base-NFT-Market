@@ -233,4 +233,139 @@ function placeBid(
 function endAuction(uint256 tokenId) external {
     // Завершение аукциона
 }
+// Добавить структуры:
+struct Rating {
+    uint256 tokenId;
+    address reviewer;
+    uint256 score; // 1-10 scale
+    string comment;
+    uint256 timestamp;
+    bool verifiedPurchase;
+}
+
+struct Review {
+    uint256 tokenId;
+    address reviewer;
+    string text;
+    uint256 timestamp;
+    uint256 helpfulCount;
+    bool verified;
+}
+
+struct NFTStats {
+    uint256 totalRatings;
+    uint256 averageRating;
+    uint256 totalReviews;
+    uint256 totalSales;
+    uint256 totalVolume;
+}
+
+// Добавить маппинги:
+mapping(uint256 => Rating[]) public nftRatings;
+mapping(uint256 => Review[]) public nftReviews;
+mapping(uint256 => NFTStats) public nftStatistics;
+
+// Добавить события:
+event RatingSubmitted(
+    uint256 indexed tokenId,
+    address indexed reviewer,
+    uint256 score,
+    string comment
+);
+
+event ReviewSubmitted(
+    uint256 indexed tokenId,
+    address indexed reviewer,
+    string text
+);
+
+event ReviewHelpful(
+    uint256 indexed tokenId,
+    uint256 reviewIndex,
+    address indexed voter
+);
+
+// Добавить функции:
+function submitRating(
+    uint256 tokenId,
+    uint256 score,
+    string memory comment
+) external {
+    require(score >= 1 && score <= 10, "Score must be between 1 and 10");
+    require(ownerOf(tokenId) != msg.sender, "Creator cannot rate their own NFT");
+    require(isNFTSold(tokenId), "NFT must be sold to rate");
+    
+    Rating memory rating = Rating({
+        tokenId: tokenId,
+        reviewer: msg.sender,
+        score: score,
+        comment: comment,
+        timestamp: block.timestamp,
+        verifiedPurchase: true
+    });
+    
+    nftRatings[tokenId].push(rating);
+    
+    // Update statistics
+    NFTStats storage stats = nftStatistics[tokenId];
+    stats.totalRatings++;
+    stats.averageRating = (stats.averageRating * (stats.totalRatings - 1) + score) / stats.totalRatings;
+    
+    emit RatingSubmitted(tokenId, msg.sender, score, comment);
+}
+
+function submitReview(
+    uint256 tokenId,
+    string memory text
+) external {
+    require(bytes(text).length > 0, "Review text cannot be empty");
+    require(ownerOf(tokenId) != msg.sender, "Creator cannot review their own NFT");
+    require(isNFTSold(tokenId), "NFT must be sold to review");
+    
+    Review memory review = Review({
+        tokenId: tokenId,
+        reviewer: msg.sender,
+        text: text,
+        timestamp: block.timestamp,
+        helpfulCount: 0,
+        verified: true
+    });
+    
+    nftReviews[tokenId].push(review);
+    
+    // Update statistics
+    NFTStats storage stats = nftStatistics[tokenId];
+    stats.totalReviews++;
+    
+    emit ReviewSubmitted(tokenId, msg.sender, text);
+}
+
+function markReviewHelpful(
+    uint256 tokenId,
+    uint256 reviewIndex
+) external {
+    require(reviewIndex < nftReviews[tokenId].length, "Invalid review index");
+    
+    Review storage review = nftReviews[tokenId][reviewIndex];
+    review.helpfulCount++;
+    
+    emit ReviewHelpful(tokenId, reviewIndex, msg.sender);
+}
+
+function getNFTRatings(uint256 tokenId) external view returns (Rating[] memory) {
+    return nftRatings[tokenId];
+}
+
+function getNFTReviews(uint256 tokenId) external view returns (Review[] memory) {
+    return nftReviews[tokenId];
+}
+
+function getNFTStats(uint256 tokenId) external view returns (NFTStats memory) {
+    return nftStatistics[tokenId];
+}
+
+function isNFTSold(uint256 tokenId) internal view returns (bool) {
+    // Implementation would check if NFT was sold
+    return true;
+}
 }
