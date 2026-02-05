@@ -368,4 +368,177 @@ function isNFTSold(uint256 tokenId) internal view returns (bool) {
     // Implementation would check if NFT was sold
     return true;
 }
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+contract NFTMarketplace is ERC721, Ownable, ReentrancyGuard {
+    // Существующие структуры и функции...
+    
+    // Новые структуры для аукционов
+    struct Auction {
+        uint256 tokenId;
+        address seller;
+        uint256 startingPrice;
+        uint256 reservePrice;
+        uint256 duration;
+        uint256 startTime;
+        uint256 currentBid;
+        address highestBidder;
+        bool ended;
+        bool active;
+        uint256 auctionId;
+    }
+    
+    struct Bid {
+        uint256 auctionId;
+        address bidder;
+        uint256 amount;
+        uint256 timestamp;
+    }
+    
+    // Новые маппинги
+    mapping(uint256 => Auction) public auctions;
+    mapping(uint256 => Bid[]) public auctionBids;
+    mapping(address => uint256[]) public userAuctions;
+    
+    // Новые события
+    event AuctionCreated(
+        uint256 indexed auctionId,
+        uint256 indexed tokenId,
+        address seller,
+        uint256 startingPrice,
+        uint256 duration
+    );
+    
+    event BidPlaced(
+        uint256 indexed auctionId,
+        address bidder,
+        uint256 amount
+    );
+    
+    event AuctionEnded(
+        uint256 indexed auctionId,
+        address winner,
+        uint256 finalAmount
+    );
+    
+    // Новые функции для аукционов
+    function createAuction(
+        uint256 tokenId,
+        uint256 startingPrice,
+        uint256 reservePrice,
+        uint256 duration
+    ) external nonReentrant {
+        require(ownerOf(tokenId) == msg.sender, "Not owner");
+        require(startingPrice > 0, "Starting price must be greater than 0");
+        require(duration > 0, "Duration must be greater than 0");
+        
+        uint256 auctionId = uint256(keccak256(abi.encodePacked(tokenId, block.timestamp)));
+        
+        auctions[auctionId] = Auction({
+            tokenId: tokenId,
+            seller: msg.sender,
+            startingPrice: startingPrice,
+            reservePrice: reservePrice,
+            duration: duration,
+            startTime: block.timestamp,
+            currentBid: 0,
+            highestBidder: address(0),
+            ended: false,
+            active: true,
+            auctionId: auctionId
+        });
+        
+        userAuctions[msg.sender].push(auctionId);
+        
+        emit AuctionCreated(auctionId, tokenId, msg.sender, startingPrice, duration);
+    }
+    
+    function placeBid(
+        uint256 auctionId,
+        uint256 amount
+    ) external payable nonReentrant {
+        Auction storage auction = auctions[auctionId];
+        require(auction.active, "Auction not active");
+        require(!auction.ended, "Auction ended");
+        require(block.timestamp < auction.startTime + auction.duration, "Auction expired");
+        require(amount > auction.currentBid, "Bid must be higher than current bid");
+        require(amount >= auction.startingPrice, "Bid must meet starting price");
+        require(msg.value >= amount, "Insufficient funds");
+        
+        // Возврат предыдущему бидеру
+        if (auction.highestBidder != address(0)) {
+            payable(auction.highestBidder).transfer(auction.currentBid);
+        }
+        
+        auction.currentBid = amount;
+        auction.highestBidder = msg.sender;
+        
+        auctionBids[auctionId].push(Bid({
+            auctionId: auctionId,
+            bidder: msg.sender,
+            amount: amount,
+            timestamp: block.timestamp
+        }));
+        
+        emit BidPlaced(auctionId, msg.sender, amount);
+    }
+    
+    function endAuction(uint256 auctionId) external nonReentrant {
+        Auction storage auction = auctions[auctionId];
+        require(auction.active, "Auction not active");
+        require(block.timestamp >= auction.startTime + auction.duration, "Auction not expired");
+        require(!auction.ended, "Auction already ended");
+        
+        auction.ended = true;
+        auction.active = false;
+        
+        if (auction.currentBid >= auction.reservePrice && auction.highestBidder != address(0)) {
+            // Передача NFT победителю
+            transferFrom(auction.seller, auction.highestBidder, auction.tokenId);
+            // Передача средств продавцу
+            payable(auction.seller).transfer(auction.currentBid);
+            
+            emit AuctionEnded(auctionId, auction.highestBidder, auction.currentBid);
+        } else {
+            // Возврат NFT продавцу если нет действительных ставок
+            transferFrom(auction.seller, auction.seller, auction.tokenId);
+            emit AuctionEnded(auctionId, address(0), 0);
+        }
+    }
+    
+    function cancelAuction(uint256 auctionId) external nonReentrant {
+        Auction storage auction = auctions[auctionId];
+        require(auction.active, "Auction not active");
+        require(auction.seller == msg.sender, "Not seller");
+        require(!auction.ended, "Auction already ended");
+        
+        auction.active = false;
+        auction.ended = true;
+        
+        // Возврат NFT продавцу
+        transferFrom(auction.seller, auction.seller, auction.tokenId);
+    }
+    
+    function getAuctionInfo(uint256 auctionId) external view returns (Auction memory) {
+        return auctions[auctionId];
+    }
+    
+    function getAuctionBids(uint256 auctionId) external view returns (Bid[] memory) {
+        return auctionBids[auctionId];
+    }
+    
+    function getUserAuctions(address user) external view returns (uint256[] memory) {
+        return userAuctions[user];
+    }
+    
+    function getActiveAuctions() external view returns (uint256[] memory) {
+        // Возвращает активные аукционы
+        return new uint256[](0);
+    }
+}
 }
