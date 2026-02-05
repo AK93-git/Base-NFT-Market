@@ -520,7 +520,7 @@ contract NFTMarketplace is ERC721, Ownable, ReentrancyGuard {
         auction.active = false;
         auction.ended = true;
         
-        // Возврат NFT продавцу
+
         transferFrom(auction.seller, auction.seller, auction.tokenId);
     }
     
