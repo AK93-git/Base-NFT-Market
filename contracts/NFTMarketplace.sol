@@ -400,12 +400,12 @@ contract NFTMarketplace is ERC721, Ownable, ReentrancyGuard {
         uint256 timestamp;
     }
     
-    // Новые маппинги
+
     mapping(uint256 => Auction) public auctions;
     mapping(uint256 => Bid[]) public auctionBids;
     mapping(address => uint256[]) public userAuctions;
     
-    // Новые события
+
     event AuctionCreated(
         uint256 indexed auctionId,
         uint256 indexed tokenId,
