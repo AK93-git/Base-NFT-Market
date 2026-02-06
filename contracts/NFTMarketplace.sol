@@ -368,15 +368,6 @@ function isNFTSold(uint256 tokenId) internal view returns (bool) {
     // Implementation would check if NFT was sold
     return true;
 }
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-
-contract NFTMarketplace is ERC721, Ownable, ReentrancyGuard {
-    // Существующие структуры и функции...
     
     // Новые структуры для аукционов
     struct Auction {
@@ -540,5 +531,23 @@ contract NFTMarketplace is ERC721, Ownable, ReentrancyGuard {
         // Возвращает активные аукционы
         return new uint256[](0);
     }
+    // Добавить в функцию listNFT
+function listNFT(uint256 tokenId, uint256 price) external {
+    require(ownerOf(tokenId) == msg.sender, "Not owner");
+    require(price > 0, "Price must be greater than 0");
+    require(listings[tokenId].active == false, "Already listed");
+    
+    // Добавленная проверка
+    require(tokenId > 0, "Invalid token ID");
+    require(ownerOf(tokenId) != address(0), "Token does not exist");
+    
+    listings[tokenId] = Listing({
+        tokenId: tokenId,
+        seller: msg.sender,
+        price: price,
+        active: true
+    });
+
+    emit NFTListed(listingIdCounter++, tokenId, msg.sender, price);
 }
 }
