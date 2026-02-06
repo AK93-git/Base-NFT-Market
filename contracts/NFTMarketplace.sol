@@ -531,7 +531,7 @@ function isNFTSold(uint256 tokenId) internal view returns (bool) {
         // Возвращает активные аукционы
         return new uint256[](0);
     }
-    // Добавить в функцию listNFT
+ 
 function listNFT(uint256 tokenId, uint256 price) external {
     require(ownerOf(tokenId) == msg.sender, "Not owner");
     require(price > 0, "Price must be greater than 0");
