@@ -199,7 +199,7 @@ contract NFTMarketplaceV2 is ERC721, Ownable, ReentrancyGuard {
         
         return result;
     }
-// Добавить структуру:
+
 struct Auction {
     uint256 tokenId;
     address seller;
@@ -213,7 +213,7 @@ struct Auction {
     bool active;
 }
 
-// Добавить функции:
+
 function createAuction(
     uint256 tokenId,
     uint256 startingPrice,
