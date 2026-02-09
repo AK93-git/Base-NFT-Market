@@ -117,7 +117,7 @@ contract BaseNFTMarket is ERC721URIStorage, ERC2981, Ownable, ReentrancyGuard {
         emit Sold(msg.sender, l.seller, tokenId, msg.value);
     }
 
-    // ---------------------------
+
     // Overrides
     // ---------------------------
     function supportsInterface(bytes4 interfaceId)
