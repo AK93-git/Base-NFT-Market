@@ -17,7 +17,7 @@ contract NFTMarketplace is ERC721URIStorage, ERC2981, Ownable, ReentrancyGuard {
 
     mapping(uint256 => Listing) public listings;
 
-    // Platform fee
+    // Platform fee 
     address public feeRecipient;
     uint96 public feeBps; // 100 = 1%, 250 = 2.5%, max 1000 = 10%
 
