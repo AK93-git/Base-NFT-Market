@@ -52,7 +52,7 @@ contract NFTMarketplace is ERC721URIStorage, ERC2981, Ownable, ReentrancyGuard {
         _setFeeParams(feeRecipient_, feeBps_);
     }
 
-    // ---------------------------
+
     // Mint
     // ---------------------------
     function mint(address to, string calldata uri) external returns (uint256 tokenId) {
