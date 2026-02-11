@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 contract NFTMarketplace is ERC721URIStorage, ERC2981, Ownable, ReentrancyGuard {
     struct Listing {
         address seller;
-        uint256 price; // wei
+        uint256 price; // wei 
     }
 
     uint256 public nextTokenId = 1;
