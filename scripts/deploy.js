@@ -1,40 +1,48 @@
-
-const { ethers } = require("hardhat");
+const fs = require("fs");
+const path = require("path");
+require("dotenv").config();
 
 async function main() {
-  console.log("Deploying NFT Marketplace...");
-  
   const [deployer] = await ethers.getSigners();
-  console.log("Deploying contracts with the account:", deployer.address);
-  console.log("Account balance:", (await deployer.getBalance()).toString());
+  console.log("Deployer:", deployer.address);
 
-  // Получаем адрес контракта NFT
-  const NFTContract = await ethers.getContractFactory("NFTMarketplaceV2");
-  
-  // Деплой с параметрами: platformFee, minimumPrice, maxRoyalty
-  const marketplace = await NFTContract.deploy(
-    250, // 2.5% platform fee
-    ethers.utils.parseEther("0.001"), // 0.001 ETH minimum listing price
-    1000 // 10% maximum royalty
+  const name = process.env.NFT_NAME || "BaseNFT";
+  const symbol = process.env.NFT_SYMBOL || "BNFT";
+
+  const royaltyReceiver = process.env.ROYALTY_RECEIVER || deployer.address;
+  const royaltyFeeNumerator = Number(process.env.ROYALTY_FEE || "500"); // 5%
+
+  const feeRecipient = process.env.FEE_RECIPIENT || deployer.address;
+  const feeBps = Number(process.env.FEE_BPS || "250"); // 2.5%
+
+  const Factory = await ethers.getContractFactory("NFTMarketplace");
+  const c = await Factory.deploy(
+    name,
+    symbol,
+    royaltyReceiver,
+    royaltyFeeNumerator,
+    feeRecipient,
+    feeBps
   );
+  await c.deployed();
 
-  await marketplace.deployed();
+  console.log("NFTMarketplace:", c.address);
 
-  console.log("NFT Marketplace deployed to:", marketplace.address);
-  
-
-  const fs = require("fs");
-  const data = {
-    marketplace: marketplace.address,
-    owner: deployer.address
+  const out = {
+    network: hre.network.name,
+    chainId: (await ethers.provider.getNetwork()).chainId,
+    deployer: deployer.address,
+    contracts: {
+      NFTMarketplace: c.address
+    }
   };
-  
-  fs.writeFileSync("./config/deployment.json", JSON.stringify(data, null, 2));
+
+  const outPath = path.join(__dirname, "..", "deployments.json");
+  fs.writeFileSync(outPath, JSON.stringify(out, null, 2));
+  console.log("Saved:", outPath);
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch(error => {
-    console.error(error);
-    process.exit(1);
-  });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
