@@ -22,7 +22,7 @@ async function main() {
 
   console.log("NFT Marketplace deployed to:", marketplace.address);
   
-  // Сохраняем адрес для дальнейшего использования
+
   const fs = require("fs");
   const data = {
     marketplace: marketplace.address,
