@@ -12,7 +12,7 @@ async function main() {
 
   console.log("Marketplace:", addr);
 
-  // Mint NFT to A
+  // Mint NFT to A 
   const tokenURI = process.env.TOKEN_URI || "ipfs://example";
   const tx1 = await m.connect(a).mint(a.address, tokenURI);
   const r1 = await tx1.wait();
