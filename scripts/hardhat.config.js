@@ -38,7 +38,7 @@ module.exports = {
     },
     base: {
       url: BASE_RPC_URL,
-      accounts: accounts(),
+      accounts: accounts(), 
       chainId: 8453
     }
   },
